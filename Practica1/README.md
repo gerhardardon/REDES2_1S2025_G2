@@ -7,7 +7,7 @@
 | Pablo Javier Batz Contreras  | 201902698  |
 | José Manuel Lacán Chavajay   | 201900087  |
 
-#Configuración basica Switch
+# Configuración basica Switch
 ```
 enable
 configure terminal
@@ -17,7 +17,7 @@ enable secret redes2grupo2 (Solo en Switch0 y Switch11)
 
 ```
 
-#Configuración modo troncal 
+# Configuración modo troncal 
 
 ```
 enable
