@@ -105,7 +105,8 @@ La configuración aplicada a cada switch en modo acceso fue la siguiente:
 ![image](https://github.com/user-attachments/assets/29f9fa1a-fdf4-4bdb-96a3-298b1b6559d0)
 
 
-```console
+```
+console
 interface FastEthernet0/11 
 switchport port-security
 switchport port-security maximum 1
