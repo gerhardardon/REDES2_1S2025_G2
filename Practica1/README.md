@@ -15,6 +15,7 @@ no ip domain-lookup
 hostname SW0_G2
 enable secret redes2grupo2 (Solo en Switch0 y Switch11)
 
+```
 
 #Configuración modo troncal 
 
@@ -28,8 +29,8 @@ do wr
 
 ```
 
-#Configuración VTP, Configuración Servidor
-## Para Switch0 y Switch11
+## Configuración VTP, Configuración Servidor
+### Para Switch0 y Switch11
 
 ```
 enable
@@ -40,7 +41,7 @@ vtp password redes2grupo2
 vtp version 2
 do wr
 show vtp status
-
+```
 # Configuración Modo Cliente
 ## Para todos los Switches faltantes 
 ```
@@ -53,11 +54,10 @@ do wr
 show vtp status
 
 ```
-# Configuración VLAN solo en Switches Servidores:  Switch0 y Switch11
+## Configuración VLAN solo en Switches Servidores:  Switch0 y Switch11
 
-## Edificio: Izquierdo
+### Edificio: Izquierdo
 ```
-
 enable
 configure terminal
 vlan 12
@@ -66,6 +66,7 @@ vlan 22
 name Basicos
 vlan 32
 name Diversificado
+```
 
 ## Edificio: Derecho
 ```
@@ -77,7 +78,7 @@ vlan 62
 name Diversificado
 do wr
 ```
-# Configuracion Acces moede Para las interfaces conectadas a las PC
+## Configuracion Acces moede Para las interfaces conectadas a las PC
 
 ```
 enable
@@ -91,7 +92,7 @@ show interface status
 
 ```
 ```
----
+
 
 # TOPOLOGIA DE RED
 
@@ -111,5 +112,3 @@ switchport port-security maximum 1
 switchport port-security violation shutdown
 switchport port-security mac-address sticky
 ```
-
----
