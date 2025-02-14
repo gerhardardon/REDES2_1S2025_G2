@@ -7,6 +7,90 @@
 | Pablo Javier Batz Contreras  | 201902698  |
 | José Manuel Lacán Chavajay   | 201900087  |
 
+#Configuración basica Switch
+```
+enable
+configure terminal
+no ip domain-lookup
+hostname SW0_G2
+enable secret redes2grupo2 (Solo en Switch0 y Switch11)
+
+
+#Configuración modo troncal 
+
+```
+enable
+configure terminal
+interface range Fa0/1-n
+switchport mode trunk
+switchport trunk allowed vlan all
+do wr
+
+```
+
+#Configuración VTP, Configuración Servidor
+## Para Switch0 y Switch11
+
+```
+enable
+configure terminal
+vtp mode server
+vtp domain g2
+vtp password redes2grupo2
+vtp version 2
+do wr
+show vtp status
+
+# Configuración Modo Cliente
+## Para todos los Switches faltantes 
+```
+enable
+configure terminal
+vtp mode client
+vtp domain g2
+vtp password redes2grupo2
+do wr
+show vtp status
+
+```
+# Configuración VLAN solo en Switches Servidores:  Switch0 y Switch11
+
+## Edificio: Izquierdo
+```
+
+enable
+configure terminal
+vlan 12
+name Primaria
+vlan 22
+name Basicos
+vlan 32
+name Diversificado
+
+## Edificio: Derecho
+```
+vlan 42
+name Primaria
+vlan 52
+name Basicos
+vlan 62
+name Diversificado
+do wr
+```
+# Configuracion Acces moede Para las interfaces conectadas a las PC
+
+```
+enable
+configure terminal
+interface fa0/11
+switchport mode access
+switchport Access vlan 12 (para primaria)
+do wr
+show interface status
+```
+
+```
+```
 ---
 
 # TOPOLOGIA DE RED
