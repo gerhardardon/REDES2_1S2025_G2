@@ -1,4 +1,4 @@
-# PRACTICA 1 - REDES DE COMPUTADORAS 2
+# ***PRACTICA 1 - REDES DE COMPUTADORAS 2***
 ## Integrantes
 | Nombre   | Carnet    |
 |----------|----------|
@@ -7,17 +7,17 @@
 | Pablo Javier Batz Contreras  | 201902698  |
 | José Manuel Lacán Chavajay   | 201900087  |
 
-# Configuración basica Switch
+# Configuración Básica Switch
 ```
 enable
 configure terminal
 no ip domain-lookup
-hostname SW0_G2
+hostname SW0_G2 (Depende del switch a configurar)
 enable secret redes2grupo2 (Solo en Switch0 y Switch11)
 
 ```
 
-# Configuración modo troncal 
+# Configuración Modo Troncal 
 
 ```
 enable
@@ -29,7 +29,8 @@ do wr
 
 ```
 
-## Configuración VTP, Configuración Servidor
+# Configuración VTP
+## Configuración Modo Servidor
 ### Para Switch0 y Switch11
 
 ```
@@ -42,8 +43,8 @@ vtp version 2
 do wr
 show vtp status
 ```
-# Configuración Modo Cliente
-## Para todos los Switches faltantes 
+## Configuración Modo Cliente
+### Para todos los Switches faltantes 
 ```
 enable
 configure terminal
@@ -54,9 +55,9 @@ do wr
 show vtp status
 
 ```
-## Configuración VLAN solo en Switches Servidores:  Switch0 y Switch11
+## Configuración VLAN solo en Switches Servidores    
 
-### Edificio: Izquierdo
+### Edificio: Izquierdo (Switch0)
 ```
 enable
 configure terminal
@@ -68,9 +69,7 @@ vlan 32
 name Diversificado
 ```
 
-## 
-
-## Edificio: Derecho
+### Edificio: Derecho (Switch11)
 ```
 vlan 42
 name Primaria
@@ -80,20 +79,10 @@ vlan 62
 name Diversificado
 do wr
 ```
-## Configuracion Acces moede Para las interfaces conectadas a las PC
 
-```
-enable
-configure terminal
-interface fa0/11
-switchport mode access
-switchport Access vlan 12 (para primaria)
-do wr
-show interface status
-```
-
-### Modo Acceso Izquierda Para las interfaces conectadas a las PC
-## Switch 6 y 7
+# Configuracion Modo Acceso (Para las interfaces conectadas a las PC)
+## Edificio: Izquierdo
+### Switch 6 y 7
 ```
 enable
 configure terminal
@@ -103,8 +92,17 @@ switchport Access vlan 12 (para primaria)
 do wr
 
 ```
+### Switch 8
+```
+enable
+configure terminal
+interface fa0/11
+switchport mode access
+switchport Access vlan 22 (para básicos)
+do wr
+```
 
-## Switch 9 Y 10
+### Switch 9 Y 10
 ```
 enable
 configure terminal
@@ -113,10 +111,8 @@ switchport mode access
 switchport Access vlan 32 (para diversificado)
 do wr
 ```
-
-
-## Modo acceso Derecha (Para las interfaces conectadas a las PC)
-## Switch 17 y 18
+## Edificio: Derecho
+### Switch 17 y 18
 ```
 enable
 configure terminal
@@ -125,9 +121,7 @@ switchport mode access
 switchport Access vlan 42 (para primaria)
 do wr
 ```
-
-
-## Switch 19
+### Switch 19
 ```
 enable
 configure terminal
@@ -135,12 +129,8 @@ interface fa0/11
 switchport mode access
 switchport Access vlan 62 (para diversificado)
 do wr
-
 ```
-
-
-## Switch 20 Y 21
-
+### Switch 20 Y 21
 ```
 enable
 configure terminal
@@ -149,9 +139,9 @@ switchport mode access
 switchport Access vlan 52 (para básicos)
 do wr
 ```
-# Enrutamiento 
-## Configuracion Basica Router
 
+# Enrutamiento 
+### Configuracion Basica Router
 ```
 enable
 configure terminal
@@ -161,11 +151,9 @@ interface Gig0/1
 no shutdown
 ```
 
-# Configuración IP routers (Solo en router0 y router1)
-## Router0
+## Configuración IP routers 
+### Router0 (Router-on-a-stick)
 ```
-Router-on-a-stick
-Subinterfaz
 enable
 configure terminal
 interface Gig0/1.12
@@ -185,10 +173,8 @@ ip address 10.0.3.1 255.255.255.0
 no shutdown 
 do wr
 ```
-# Router1
+### Router1 (Router-on-a-stick)
 ```
-Router-on-a-stick
-Subinterfaz
 enable
 configure terminal
 interface Gig0/1.42
@@ -209,7 +195,7 @@ no shutdown
 do wr
 
 ```
-# router2
+### Router2
 ```
 interface Gig0/0
 ip address 10.0.3.2 255.255.255.0
@@ -219,7 +205,7 @@ ip address 10.0.4.1 255.255.255.0
 no shutdown
 do wr
 ```
-# router3 
+### Router3 
 ```
 interface Gig0/0
 ip address 10.0.5.2 255.255.255.0
@@ -230,9 +216,8 @@ no shutdown
 do wr
 ```
 
-# ENRUTAMIENTO DINAMICO OSPF (Router0 y Router2)
-
-## router0
+## Erutamiento Dinámico OSPF 
+### Router0
 ```
 router ospf 10
 network 192.168.12.0 0.0.0.255 área 0
@@ -240,9 +225,15 @@ network 192.168.22.0 0.0.0.255 área 0
 network 192.168.32.0 0.0.0.255 área 0
 network 10.0.3.0 0.0.0.255 área 0
 ```
+### Router2
+```
+router ospf 10
+network 10.0.3.0 0.0.0.255 área 0
+redistribute rip metric 10 subnets
+```
 
-#  EIGRP (Router1 y Router3) router1
-
+## Erutamiento Dinámico EIGRP 
+### Router1
 ```
 router eigrp 10
 network 192.168.42.0 0.0.0.255
@@ -252,8 +243,7 @@ network 10.0.5.0 0.0.0.255
 no auto-summary
 
 ```
-
-# router3
+### Router3
 ```
 router eigrp 10
 network 10.0.5.0 0.0.0.255
@@ -261,22 +251,22 @@ no auto-summary
 redistribute rip metric 25600 1010 255 255 1500
 ```
 
-# RIP (Router2 y Router3) router2
-
+## Erutamiento Dinámico RIP 
+### Router2
 ```
 router rip
 versión 2
 network 10.0.4.0
 redistribute ospf 10 metric 2
 ```
-
-# router3
+### Router3
 ```
 router rip
 versión 2
 network 10.0.4.0
 redistribute eigrp 10 metric 2
 ```
+
 # TOPOLOGIA DE RED
 
 ![image](https://github.com/user-attachments/assets/63acb9a8-175c-4348-8e78-468803b97497)
