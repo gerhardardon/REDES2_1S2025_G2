@@ -285,3 +285,33 @@ switchport port-security maximum 1
 switchport port-security violation shutdown
 switchport port-security mac-address sticky
 ```
+
+# PVST 
+## Configuracion de RPVST 
+**Se debe encontrar el switch bridge**
+```
+sh spanning-tree 
+```
+El bridge debe decir "this si the bridge"
+**Configurar pvst**
+```
+conf t
+spanning-tree mode rapid-pvst
+do wr
+exit 
+```
+**Para probar el rpvst**
+```
+conf t 
+int range fa0/1-24
+shutdown
+exit
+```
+
+## Analisis de convergencia 
+|escenario|protocolo|red primaria|basicos|diversificado|
+|---------------------|------------|------------|--|-
+|1|PVST|10s|15s|12s|
+|2|RPVST|0|0|0|
+
+**Conclusion de nuestra elección:**  Rapid PVST es la mejor opción porque tiene menor tiempo de convergencia, lo que ayuda a recuperar más rápido la red en caso de fallos. El tiempo de convergencia con este protocolo es casi imperceptible.
