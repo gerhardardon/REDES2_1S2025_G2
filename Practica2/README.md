@@ -1,106 +1,207 @@
+# Practica 2
 
-<img src="http://4.bp.blogspot.com/_jG2FLThbJts/So4pS1KMxLI/AAAAAAAAAI8/f0rAkcI1-5g/w1200-h630-p-k-no-nu/escudo_usac_transparente_web.png" alt="drawing" width="100"/>
+## Topología propuesta
+![1](img/1.jpg)
+## Desglose de subnetting utilizado dividido entre VLSM y FLSM
+### Red de Servers
+![1](img/2.png)
+### Red de Ruteo
+![1](img/3.png)
+### Red de VLANs
+![1](img/4.png)
+## Configuraciones DHCP tanto de servidores como de routers inalámbricos
+### Server DHCP
+![1](img/5.png)
+### Router Piso 2
+![1](img/6.png)
+### Router Piso 3
+![1](img/7.png)
+## Configuración DNS y HTTP de servidor WEB
+### Creacion de Dominio
+![1](img/8.png)
+### index.html
+![1](img/9.png)
+## Comandos utilizados
+```
+VLANs, Modo Acceso y Modo Troncal Switches Capa 2
+Switch0 (Piso1)
+vlan 12
+name ADMIN
+vlan 22
+name ESTUDIANTES
+interface fa0/12
+switchport mode access
+switchport access vlan 12
+interface fa 0/11
+switchport mode access 
+switchport access vlan 22
+interface range gig0/1-2
+switchport mode trunk
+switchport trunk allowed vlan 12,22,32,42
 
-### Universidad San Carlos de Guatemala
-### Facultad de ingeniería
-### Escuela de ciencias y sistemas
-### Modelación y simulación 1
+Switch1 (Data Center)
+vlan 32
+name WEB_SERVERS
+vlan 42
+name DHCP_SERVERS
+interface fa0/11
+switchport mode access
+switchport access vlan 32
+interface fa0/12
+switchport mode access 
+switchport access vlan 42
+interface fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 12,22,32,42
 
-#### INTEGRANTES
-+ Steven S. Jocol Gomez	201602938
-+ Angel Geovanny Ordon Colchaj	201905741
-+ Saul Jafet Menchu Recinos	201906444
-+ Carlos Augusto Hernández Ordoñez	201611269
-+ Maxwellt Joel Ramirez Ramazzini 	201709328
+Configuración Routers: asignar IP, dhcp y encender interfaz
+Router1 (Piso1)
+interface gig0/0
+ip address 10.0.2.22 255.255.255.252
+no shutdown
+interface gig0/1.12
+ip helper-address 192.168.100.130
+Router0 (Piso1)
+interface gig0/0
+ip address 10.0.2.26 255.255.255.252
+no shutdown
+interface gig0/1.22
+ip helper-address 192.168.100.130
 
+Configuración Switches capa 3
+ip routing (En todos)
 
+Multilayer Switch0 (Data Center)
+interface fa0/5
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 12,22,32,42
+vlan 32
+name WEB_SERVERS
+vlan 42
+name DHCP_SERVERS
+interface vlan 32
+ip address 192.168.100.1 255.255.255.128
+interface vlan 42
+ip address 192.168.100.129 255.255.255.128
 
-### Introducción
+Configuración LACP
+Multilayer Switch0 - Multilayer Switch1
+MS0
+interface range fa0/1-4
+channel-group 1 mode active
+interface port-channel 1
+no switchport
+ip address 10.0.2.1 255.255.255.252
+MS1
+interface range fa0/1-4
+channel-group 1 mode active
+interface port-channel 1
+no switchport
+ip address 10.0.2.2 255.255.255.252
+interface gig0/1
+no switchport
+ip address 10.0.2.21 255.255.255.252
+interface gig0/2
+no switchport
+ip address 10.0.2.25 255.255.255.252
 
-### Objetivos
+Multilayer Switch1 - Multilayer Switch2
+MS1
+interface range fa0/5-8
+channel-group 2 mode active
+interface port-channel 2
+no switchport
+ip address 10.0.2.9 255.255.255.252
 
-### Anexos
-#### Tabla 1 tipos de clientes
+MS2
+interface range fa0/1-4
+channel-group 2 mode active
+interface port-channel 2
+no switchport
+ip address 10.0.2.10 255.255.255.252
+interface gig0/1
+no switchport
+ip address 10.0.2.5 255.255.255.252
 
-La probabilidad del tipo de clientes que llegan a realizar un pedido es la siguiente.
+Multilayer Switch1 - Multilayer Switch3
+MS1
+interface range fa0/9-12
+channel-group 3 mode active
+interface port-channel 3
+no switchport
+ip address 10.0.2.13 255.255.255.252
 
-![alt text](img/1.png)
+MS3
+interface range fa0/1-4
+channel-group 3 mode active
+interface port-channel 3
+no switchport
+ip address 10.0.2.14 255.255.255.252
+interface gig0/1
+no switchport
+ip address 10.0.2.17 255.255.255.252
 
+Ruteo OSPF
+Multilayer Switch1
+router ospf 2
+network 10.0.2.0 0.0.0.3 area 0
+network 10.0.2.8 0.0.0.3 area 0
+network 10.0.2.12 0.0.0.3 area 0
+network 10.0.2.20 0.0.0.3 area 0
+network 10.0.2.24 0.0.0.3 area 0
 
-#### Tabla 2 distribución de elección de flores
-Distribución de flores, cumpliendo con una distribución uniforme respecto a cada tipo de flor.
+Multilayer Switch0
+router ospf 2
+network 10.0.2.0 0.0.0.3 area 0
+network 192.168.10
+network 192.168.100.0 0.0.0.127 area 0 
+network 192.168.100.128 0.0.0.127 area 0
 
-![alt text](img/2.png)
+Multilayer Switch2
+router ospf 2
+network 10.0.2.8 0.0.0.3 area 0
+network 10.0.2.4 0.0.0.3 área 0
 
-### Tabla 3 Auto Tareas
-Cuando se realiza la elección de un tipo de flor, tiene consigo una ponderiación, y la entidad
+Multilayer Switch3
+router ospf 2
+network 10.0.2.12 0.0.0.3 area 0
+network 10.0.2.16 0.0.0.3 area 0
 
-![alt text](img/11.png)
+Router1
+router ospf 2
+network 10.0.2.20 0.0.0.3 área 0
+network 192.168.2.0 0.0.0.63 area 0
+network 192.168.2.192 0.0.0.15 area 0
 
-#### Proceso de elección
-1. Selección de flores
+Router0
+router ospf 2 
+network 10.0.2.24 0.0.0.3 área 0
+network 192.168.2.0 0.0.0.63 area 0
+network 192.168.2.192 0.0.0.15 area 0
 
-Se realiza la validación, en el caso donde los items seleccionados (las flores) sean mayores a 4 se finaliza el proceso, en caso contrario, se sigue realización el proceso de asignación del valor de la variable **ModelEntity.Seleccion** aumentando su valor.
+HSRP
+Router1(Piso1)
+interface gig0/1.12
+encapsulation dot1q 12
+ip address 192.168.2.194 255.255.255.240
+standby 1 ip 192.168.2.193
+standby 1 priority 150
+standby 1 preempt
+interface gig0/1.22
+encapsulation dot1q 22
+ip address 192.168.2.2 255.255.255.192
+standby 2 ip 192.168.2.1
+standby 2 priority 150
+standby 2 preempt
 
-Seguido de la elección de flores, guiado en la tabla 2, donde se usa la propiedad __Flores.Probabilidad.RandomRow__.
-
-Seguidamente de la decisión, si el tipo de Flor es Rosa, se le agrega la cantidad de rosas, más la cantidad de flores elegidas, y finaliza el proceso.
-Se repite el proceso, con los demás tipos de flores: Rosas, Orquideas, Linos, Tulipanes, Girasoles.
-
-![alt text](img/3.png)
-
-
-2. selección de flores, realiza una condición: Si la elección de flores es mayor a 5 finaliza el proces, en caso contrario realiza lo siguiente:
-
-El modelentity, la selección le aumenta un valor.
-A la variable Flores, se le agrega selecciona un valor, basado siempre en la tabla 2, seguido el Flores.TipoFlor se le agrega el valor del tipo y la cantidad.
-
-
-![alt text](img/4.png)
-
-
-3. Notificación de orden completa
-
-La cual consiste una condición de dos valores, donde Almacen.InputBuffer.Contents == 0 & Almacen.Processing.Contents==0, siendo el caso donde fuera falso finaliza el proceso, 
-en caso contratio cuando lo realiza el evento OrdenCompleta
-
-![alt text](img/5.png)
-
-4. Incremento de tareas
-
-Este proceso tiene como finalidad aumentar la fase de la selección en el caso de que aún no llegue al limite, utilizando un setRow, en el inicio se tiene una decisión, cuando
-el ModelEntity.FaseSeleccion es mayor a 5 realiza la asignación ModelEntity.FaseSeleccion igual a 1-
-
-Caso contrario, realiza la incrementación de ModelEntity.FaseSeleccion en uno, y setear el valor de la tabla de fase
-
-![alt text](img/6.png)
-
-
-5. Envio de flores al almacen
-SetRow1, Decide3, Create1, Decide7, Wait2, Assign2, End: Estos elementos forman un flujo normal donde el ModelEntity.CantidadRosas llaman el valor a una variable, la decisión de finalizar este proceso en el mismo flujo es, donde Almacen.InputBuffer.Contents > 0 || Almacen.Processing.Contents > 0, si ambos valores son igual a 0. Seguido de a la espera de un evento con una acción.
-
-Decide: Los múltiples nodos "Decide" indican puntos de bifurcación en el proceso, donde se toman decisiones basadas en ciertas condiciones.
-
-Create: Estos nodos sugieren la creación de nuevas entidades o elementos dentro de la simulación. En el caso de que ya exista la transfiere y finaliza su valor, en caso contrario también finaliza el valor
-Transfer: Indica la transferencia de entidades entre diferentes partes del sistema.
-Wait: Representa un tiempo de espera o retraso en el proceso. En este caso la espera de un evento
-Assign: Se utiliza para asignar valores a atributos de las entidades.
-
-![alt text](img/7.png)
-
-6. Incrementador de **OrdenesGeneradas**
-
-![alt text](img/8.png)
-
-
-7. El proceso de **cola de ordenes** donde el contenido del sistema automático, cuando tenga valor se quede a espera de un evento
-
-![alt text](img/9.png)
-
-
-8. Ciclo automático
-El modelo evalua si la fase de selección si es menor a 5, se finaliza el proceso. En caso contrario se toma como valor del setNode en Selección Completa. Finaliza lanzando el evento Selección Terminada.
-
-![alt text](img/10.png)
-
-
+Router0(Piso1)
+interface gig0/1.12
+encapsulation dot1q 12
+ip address 192.168.2.195 255.255.255.240
+standby 1 ip 192.168.2.193
+interface gig0/1.22
+encapsulation dot1q 22
+ip address 192.168.2.3 255.255.255.192
+standby 2 ip 192.168.2.1
+```
